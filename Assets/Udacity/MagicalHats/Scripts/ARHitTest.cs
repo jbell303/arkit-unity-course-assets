@@ -37,8 +37,11 @@ public class ARHitTest : MonoBehaviour {
 		List<ARHitTestResult> hitResults = UnityARSessionNativeInterface.GetARSessionNativeInterface ().HitTest (point, resultTypes);
 		if (hitResults.Count > 0) {
 			foreach (var hitResult in hitResults) {
-				//TODO: get the position and rotations to spawn the hat
-				return true;
+                //TODO: get the position and rotations to spawn the hat
+                Vector3 position = UnityARMatrixOps.GetPosition(hitResult.worldTransform); //returns a Vector3 in Unity Coordinates
+                Quaternion rotation = UnityARMatrixOps.GetRotation(hitResult.worldTransform); //returns a Quaternion in Unity Coordinates
+                spawnedObjects.Add(Instantiate(hitPrefab, position, rotation));
+                return true;
 			}
 		}
 		return false;
@@ -55,6 +58,13 @@ public class ARHitTest : MonoBehaviour {
 		//TODO: Raycast from the screen point into the virtual world and see if we hit anything
 		//if we do, then check to see if it is part of the spawnedObjects array
 		//if so, then delete the object we raycast hit
+		RaycastHit hit;
+		if (Physics.Raycast (ARCamera.ScreenPointToRay (point), out hit)) {
+			GameObject item = hit.collider.transform.parent.gameObject;
+			if (spawnedObjects.Remove (item)) {
+				Destroy(item);
+			}
+		}
 	}
 		
 	/// <summary>

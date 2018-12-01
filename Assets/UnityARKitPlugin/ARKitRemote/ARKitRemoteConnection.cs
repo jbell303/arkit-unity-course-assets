@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.Networking.PlayerConnection;
 using System.Text;
-using Utils; 
+using UnityEngine.XR.iOS.Utils; 
 
 #if UNITY_EDITOR
  
@@ -16,6 +16,7 @@ namespace UnityEngine.XR.iOS
 		public UnityARPlaneDetection planeDetection = UnityARPlaneDetection.Horizontal;
 		public bool getPointCloud = true;
 		public bool enableLightEstimation = true;
+		public bool enableAutoFocus = true;
 
 		[Header("Run Options")]
 		public bool resetTracking = true;
@@ -88,8 +89,10 @@ namespace UnityEngine.XR.iOS
 
 		void OnDestroy()
 		{
-			#if UNITY_2017_1_OR_NEWER		
-			editorConnection.DisconnectAll ();
+			#if UNITY_2017_1_OR_NEWER
+			if(editorConnection != null) {
+				editorConnection.DisconnectAll ();
+			}
 			#endif
 		}
 
@@ -157,7 +160,7 @@ namespace UnityEngine.XR.iOS
 		{
 			if (!bTexturesInitialized)
 				return;
-			remoteScreenYTex.LoadRawTextureData(mea.data);
+			remoteScreenYTex.LoadRawTextureData(CompressionHelper.ByteArrayDecompress(mea.data));
 			remoteScreenYTex.Apply ();
 			UnityARVideo arVideo = Camera.main.GetComponent<UnityARVideo>();
 			if (arVideo) {
@@ -170,7 +173,7 @@ namespace UnityEngine.XR.iOS
 		{
 			if (!bTexturesInitialized)
 				return;
-			remoteScreenUVTex.LoadRawTextureData(mea.data);
+			remoteScreenUVTex.LoadRawTextureData(CompressionHelper.ByteArrayDecompress(mea.data));
 			remoteScreenUVTex.Apply ();
 			UnityARVideo arVideo = Camera.main.GetComponent<UnityARVideo>();
 			if (arVideo) {
@@ -184,7 +187,7 @@ namespace UnityEngine.XR.iOS
 		{
 			serializableFromEditorMessage sfem = new serializableFromEditorMessage ();
 			sfem.subMessageId = SubMessageIds.editorInitARKit;
-			serializableARSessionConfiguration ssc = new serializableARSessionConfiguration (startAlignment, planeDetection, getPointCloud, enableLightEstimation); 
+			serializableARSessionConfiguration ssc = new serializableARSessionConfiguration (startAlignment, planeDetection, getPointCloud, enableLightEstimation, enableAutoFocus); 
 			UnityARSessionRunOption roTracking = resetTracking ? UnityARSessionRunOption.ARSessionRunOptionResetTracking : 0;
 			UnityARSessionRunOption roAnchors = removeExistingAnchors ? UnityARSessionRunOption.ARSessionRunOptionRemoveExistingAnchors : 0;
 			sfem.arkitConfigMsg = new serializableARKitInit (ssc, roTracking | roAnchors);
