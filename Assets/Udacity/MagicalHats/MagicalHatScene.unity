@@ -1056,7 +1056,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ARCamera: {fileID: 901383415}
   hitPrefab: {fileID: 1838270949056036, guid: c33c7b846bd174e6d80400f7f3f3881e, type: 2}
-  bunny: {fileID: 1012544790904206, guid: efadeb142c80bb548909abcd564ade56, type: 2}
+  bunny: {fileID: 1012544790904206, guid: bafdc932ce1c645eda3418a636a9e324, type: 2}
 --- !u!4 &1911704577
 Transform:
   m_ObjectHideFlags: 0
