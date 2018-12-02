@@ -68,9 +68,7 @@ public class ARHitTest : MonoBehaviour {
         if (Physics.Raycast (ARCamera.ScreenPointToRay(point), out hit))
         {
             selectedHat = hit.collider.transform.parent.gameObject;
-            Vector3 relativePos = selectedHat.transform.position - ARCamera.transform.position;
-            Quaternion rotation = Quaternion.LookRotation(relativePos, Vector3.up);
-            rotation = Quaternion.Euler(0, rotation.y, 0);
+            Quaternion rotation = Quaternion.Euler(0, ARCamera.transform.rotation.eulerAngles.y - 180, 0);
             Instantiate(bunny, selectedHat.transform.position, rotation);
             raiseHat = true;
         }
