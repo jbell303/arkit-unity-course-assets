@@ -7,8 +7,10 @@ public class ARHitTest : MonoBehaviour {
 	public Camera ARCamera; //the Virtual Camera used for AR
 	public GameObject hitPrefab; //prefab we place on a hit test
     public GameObject bunny; //bunny prefab
+    bool raiseHat = false;
+    GameObject selectedHat;
 
-	private List<GameObject> spawnedObjects = new List<GameObject>(); //array used to keep track of spawned objects
+    private List<GameObject> spawnedObjects = new List<GameObject>(); //array used to keep track of spawned objects
 
 	/// <summary>
 	/// Function that is called on 
@@ -54,22 +56,33 @@ public class ARHitTest : MonoBehaviour {
             //RemoveObject (Input.mousePosition);
             AddBunny(Input.mousePosition);
 		}
-	}
+        if (raiseHat == true)
+        {
+            RaiseHat();
+        }
+    }
 
     public void AddBunny(Vector2 point)
     {
         RaycastHit hit;
         if (Physics.Raycast (ARCamera.ScreenPointToRay(point), out hit))
         {
-            Transform hat = hit.collider.transform;
-            Instantiate(bunny, hat);
-            float moveDistance = 0;
-            while (moveDistance < 20)
-            {
-                float oldHeight = hat.position.z;
-                hat.Translate(0, 0, Time.deltaTime);
-                moveDistance = hat.position.z - oldHeight;
-            }
+            selectedHat = hit.collider.transform.parent.gameObject;
+            Instantiate(bunny, selectedHat.transform);
+            raiseHat = true;
+        }
+    }
+
+    public void RaiseHat()
+    {
+        float bunnyHeight = 0.15f;
+        if (selectedHat.transform.position.y < (bunny.transform.position.y + bunnyHeight))
+        {
+            selectedHat.transform.Translate(0, Time.deltaTime / 10, 0);
+        }
+        else
+        {
+            raiseHat = false;
         }
     }
 
