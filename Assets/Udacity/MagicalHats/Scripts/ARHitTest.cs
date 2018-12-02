@@ -51,7 +51,9 @@ public class ARHitTest : MonoBehaviour {
                 // if this is the first hat, add a bunny as the child of that hat
                 if (spawnedObjects.Count == 1)
                 {
-                    Instantiate(bunny, spawnedObjects[0].transform);
+                    Instantiate(bunny, position, rotation);
+                    bunny.transform.SetParent(spawnedObjects[0].transform);
+                    Debug.Log("Parent of bunny is: " + bunny.transform.parent);
                 }
                 return true;
 			}
@@ -66,6 +68,13 @@ public class ARHitTest : MonoBehaviour {
             selectedHat = SelectHat(Input.mousePosition);
             if (selectedHat != null)
             {
+            	// if the hat contains the bunny, we don't want it to move with
+        		// the hat
+        		if (bunny.transform.IsChildOf(selectedHat.transform))
+        		{
+            		// detach hat as parent transform of bunny
+            		bunny.transform.parent = null;
+        		}
                 raiseHat = true;
             }
 		}
@@ -92,19 +101,9 @@ public class ARHitTest : MonoBehaviour {
 
     public void RaiseHat()
     {
-
-        // if the hat contains the bunny, we don't want it to move with
-        // the hat
-        if (bunny.transform.IsChildOf(selectedHat.transform))
-        {
-            // detach hat as parent transform of bunny
-            bunny.transform.parent = null;
-        }
-        
         // move the hat upwards until reaching the specified distance
         float moveHeight = 0.05f;
-        float startHeight = selectedHat.transform.position.y;
-        if (selectedHat.transform.position.y < (startHeight + moveHeight))
+        if (selectedHat.transform.position.y < (bunny.transform.position.y + moveHeight))
         {
             selectedHat.transform.Translate(0, Time.deltaTime / 2, 0);
         }
