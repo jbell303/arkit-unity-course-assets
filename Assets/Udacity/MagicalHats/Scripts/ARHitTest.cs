@@ -68,14 +68,17 @@ public class ARHitTest : MonoBehaviour {
         if (Physics.Raycast (ARCamera.ScreenPointToRay(point), out hit))
         {
             selectedHat = hit.collider.transform.parent.gameObject;
-            Instantiate(bunny, selectedHat.transform.position, selectedHat.transform.rotation);
+            Vector3 relativePos = selectedHat.transform.position - ARCamera.transform.position;
+            Quaternion rotation = Quaternion.LookRotation(relativePos, Vector3.up);
+            rotation = Quaternion.Euler(0, rotation.y, 0);
+            Instantiate(bunny, selectedHat.transform.position, rotation);
             raiseHat = true;
         }
     }
 
     public void RaiseHat()
     {
-        float bunnyHeight = 0.15f;
+        float bunnyHeight = 0.05f;
         if (selectedHat.transform.position.y < (bunny.transform.position.y + bunnyHeight))
         {
             selectedHat.transform.Translate(0, Time.deltaTime / 2, 0);
