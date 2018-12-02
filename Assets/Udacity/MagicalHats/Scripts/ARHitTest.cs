@@ -68,7 +68,7 @@ public class ARHitTest : MonoBehaviour {
         if (Physics.Raycast (ARCamera.ScreenPointToRay(point), out hit))
         {
             selectedHat = hit.collider.transform.parent.gameObject;
-            Instantiate(bunny, selectedHat.transform);
+            Instantiate(bunny, selectedHat.transform.position, selectedHat.transform.rotation);
             raiseHat = true;
         }
     }
@@ -78,7 +78,7 @@ public class ARHitTest : MonoBehaviour {
         float bunnyHeight = 0.15f;
         if (selectedHat.transform.position.y < (bunny.transform.position.y + bunnyHeight))
         {
-            selectedHat.transform.Translate(0, Time.deltaTime / 10, 0);
+            selectedHat.transform.Translate(0, Time.deltaTime / 2, 0);
         }
         else
         {
