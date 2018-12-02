@@ -9,6 +9,8 @@ public class ARHitTest : MonoBehaviour {
     public GameObject bunny; //bunny prefab
     bool raiseHat = false;
     GameObject selectedHat;
+    GameObject spawnedBunny;
+    Vector3 hatStartPos;
 
     private List<GameObject> spawnedObjects = new List<GameObject>(); //array used to keep track of spawned objects
 
@@ -45,15 +47,15 @@ public class ARHitTest : MonoBehaviour {
                 Quaternion rotation = UnityARMatrixOps.GetRotation(hitResult.worldTransform); //returns a Quaternion in Unity Coordinates
 
                 // add hat to the list of spawned objects, instantiate a new hat
-                //Quaternion rotation = Quaternion.Euler(0, ARCamera.transform.rotation.eulerAngles.y - 180, 0);
                 spawnedObjects.Add(Instantiate(hitPrefab, position, rotation));
 
                 // if this is the first hat, add a bunny as the child of that hat
                 if (spawnedObjects.Count == 1)
                 {
-                    Instantiate(bunny, position, rotation);
-                    bunny.transform.SetParent(spawnedObjects[0].transform);
-                    Debug.Log("Parent of bunny is: " + bunny.transform.parent);
+                	rotation = Quaternion.Euler(0, ARCamera.transform.rotation.eulerAngles.y - 180, 0);
+                    spawnedBunny = Instantiate(bunny, position, rotation);
+                    spawnedBunny.transform.SetParent(spawnedObjects[0].transform);
+                    spawnedBunny.SetActive(false);
                 }
                 return true;
 			}
@@ -70,11 +72,13 @@ public class ARHitTest : MonoBehaviour {
             {
             	// if the hat contains the bunny, we don't want it to move with
         		// the hat
-        		if (bunny.transform.IsChildOf(selectedHat.transform))
+        		if (spawnedBunny.transform.IsChildOf(selectedHat.transform))
         		{
             		// detach hat as parent transform of bunny
-            		bunny.transform.parent = null;
+            		spawnedBunny.SetActive(true);
+            		spawnedBunny.transform.parent = null;
         		}
+        		hatStartPos = selectedHat.transform.position;
                 raiseHat = true;
             }
 		}
@@ -102,8 +106,8 @@ public class ARHitTest : MonoBehaviour {
     public void RaiseHat()
     {
         // move the hat upwards until reaching the specified distance
-        float moveHeight = 0.05f;
-        if (selectedHat.transform.position.y < (bunny.transform.position.y + moveHeight))
+        float moveHeight = 0.15f;
+        if (selectedHat.transform.position.y < (hatStartPos.y + moveHeight))
         {
             selectedHat.transform.Translate(0, Time.deltaTime / 2, 0);
         }
